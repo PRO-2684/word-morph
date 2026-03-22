@@ -1,0 +1,35 @@
+languagesystem DFLT dflt;
+languagesystem latn dflt;
+
+lookup B_TO_O {
+    sub b by o;
+} B_TO_O;
+
+lookup A1_TO_R {
+    sub a by r;
+} A1_TO_R;
+
+lookup N1_TO_A {
+    sub n by a;
+} N1_TO_A;
+
+lookup A2_TO_N {
+    sub a by n;
+} A2_TO_N;
+
+lookup N2_TO_G {
+    sub n by g;
+} N2_TO_G;
+
+lookup A3_TO_E {
+    sub a by e;
+} A3_TO_E;
+
+feature calt {
+    sub b' lookup B_TO_O
+        a' lookup A1_TO_R
+        n' lookup N1_TO_A
+        a' lookup A2_TO_N
+        n' lookup N2_TO_G
+        a' lookup A3_TO_E;
+} calt;
