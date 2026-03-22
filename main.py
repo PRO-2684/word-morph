@@ -1,5 +1,12 @@
+from fontTools.ttLib import TTFont
+from fontTools.feaLib.builder import addOpenTypeFeatures
+
+
+
 def main():
-    print("Hello from font-test!")
+    font = TTFont("fonts/MicrosoftYaHei.ttf")
+    addOpenTypeFeatures(font, "test.fea")
+    font.save("fonts/yahei-mod.ttf")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,9 @@
 languagesystem DFLT dflt;
 languagesystem latn dflt;
 
+@LETTER = [a b c d e f g h i j k l m n o p q r s t u v w x y z
+           A B C D E F G H I J K L M N O P Q R S T U V W X Y Z];
+
 lookup B_TO_O {
     sub b by o;
 } B_TO_O;
@@ -26,10 +29,17 @@ lookup A3_TO_E {
 } A3_TO_E;
 
 feature calt {
-    sub b' lookup B_TO_O
-        a' lookup A1_TO_R
-        n' lookup N1_TO_A
-        a' lookup A2_TO_N
-        n' lookup N2_TO_G
-        a' lookup A3_TO_E;
+    lookup BANANA_TO_ORANGE {
+        ignore substitute @LETTER
+            b' a' n' a' n' a';
+        ignore substitute
+            b' a' n' a' n' a' @LETTER;
+
+        sub b' lookup B_TO_O
+            a' lookup A1_TO_R
+            n' lookup N1_TO_A
+            a' lookup A2_TO_N
+            n' lookup N2_TO_G
+            a' lookup A3_TO_E;
+    } BANANA_TO_ORANGE;
 } calt;

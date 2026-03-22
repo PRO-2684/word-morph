@@ -5,6 +5,5 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "afdko>=4.0.3",
     "fonttools>=4.62.1",
 ]
