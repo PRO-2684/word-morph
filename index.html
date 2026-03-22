@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Font Mirror Test</title>
+  <style>
+    @font-face {
+      font-family: "YaHeiMod";
+      src: url("./fonts/yahei-mod.ttf") format("truetype");
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    body {
+      margin: 24px;
+      font-family: system-ui, sans-serif;
+      line-height: 1.5;
+    }
+
+    .wrap {
+      max-width: 800px;
+    }
+
+    textarea,
+    .mirror {
+      box-sizing: border-box;
+      width: 100%;
+      min-height: 180px;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 24px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    textarea {
+      resize: vertical;
+      font-family: system-ui, sans-serif;
+    }
+
+    .mirror {
+      margin-top: 16px;
+      font-family: "YaHeiMod", sans-serif;
+      background: #fafafa;
+    }
+
+    .label {
+      margin: 0 0 8px;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="label">Input (system font)</p>
+    <textarea id="input" placeholder="Type here...">banana</textarea>
+
+    <p class="label">Mirror (modified font)</p>
+    <div id="mirror" class="mirror"></div>
+  </div>
+
+  <script>
+    const input = document.getElementById("input");
+    const mirror = document.getElementById("mirror");
+
+    function sync() {
+      mirror.textContent = input.value;
+    }
+
+    input.addEventListener("input", sync);
+    sync();
+  </script>
+</body>
+</html>
