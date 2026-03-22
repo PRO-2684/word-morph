@@ -1,78 +1,91 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Font Mirror Test</title>
-  <style>
-    @font-face {
-      font-family: "YaHeiMod";
-      src: url("./fonts/yahei-mod.ttf") format("truetype");
-      font-weight: normal;
-      font-style: normal;
-    }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Font Mirror Test</title>
+        <style>
+            @font-face {
+                font-family: "MicrosoftYaHei";
+                src: url("./fonts/MicrosoftYaHei.ttf") format("truetype");
+                font-weight: normal;
+                font-style: normal;
+            }
 
-    body {
-      margin: 24px;
-      font-family: system-ui, sans-serif;
-      line-height: 1.5;
-    }
+            @font-face {
+                font-family: "Microslop";
+                src: url("./fonts/Microslop.ttf") format("truetype");
+                font-weight: normal;
+                font-style: normal;
+            }
 
-    .wrap {
-      max-width: 800px;
-    }
+            body {
+                margin: 24px;
+                font-family: system-ui, sans-serif;
+                line-height: 1.5;
+            }
 
-    textarea,
-    .mirror {
-      box-sizing: border-box;
-      width: 100%;
-      min-height: 180px;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 24px;
-      line-height: 1.6;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
+            .wrap {
+                max-width: 800px;
+            }
 
-    textarea {
-      resize: vertical;
-      font-family: system-ui, sans-serif;
-    }
+            textarea,
+            .mirror {
+                box-sizing: border-box;
+                width: 100%;
+                min-height: 180px;
+                padding: 12px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                font-size: 24px;
+                line-height: 1.6;
+                white-space: pre-wrap;
+                word-break: break-word;
+            }
 
-    .mirror {
-      margin-top: 16px;
-      font-family: "YaHeiMod", sans-serif;
-      background: #fafafa;
-    }
+            textarea {
+                resize: vertical;
+                font-family: system-ui, sans-serif;
+            }
 
-    .label {
-      margin: 0 0 8px;
-      font-size: 14px;
-      color: #555;
-    }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <p class="label">Input (system font)</p>
-    <textarea id="input" placeholder="Type here...">banana</textarea>
+            .mirror {
+                margin-top: 16px;
+                font-family: "Microslop", sans-serif;
+                background: #fafafa;
+            }
 
-    <p class="label">Mirror (modified font)</p>
-    <div id="mirror" class="mirror"></div>
-  </div>
+            .original {
+                font-family: "MicrosoftYaHei", sans-serif;
+            }
 
-  <script>
-    const input = document.getElementById("input");
-    const mirror = document.getElementById("mirror");
+            .label {
+                margin: 0 0 8px;
+                font-size: 14px;
+                color: #555;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrap">
+            <p class="label">Input (MicrosoftYaHei)</p>
+            <textarea id="input" class="original" placeholder="Type here...">
+Microsoft</textarea
+            >
 
-    function sync() {
-      mirror.textContent = input.value;
-    }
+            <p class="label">Mirror (Microslop)</p>
+            <div id="mirror" class="mirror"></div>
+        </div>
 
-    input.addEventListener("input", sync);
-    sync();
-  </script>
-</body>
+        <script>
+            const input = document.getElementById("input");
+            const mirror = document.getElementById("mirror");
+
+            function sync() {
+                mirror.textContent = input.value;
+            }
+
+            input.addEventListener("input", sync);
+            sync();
+        </script>
+    </body>
 </html>

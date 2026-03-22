@@ -1,23 +1,25 @@
+import argparse
+from io import StringIO
 from pathlib import Path
 
 from fontTools.feaLib.builder import addOpenTypeFeatures
 from fontTools.ttLib import TTFont
 
-FONT_PATH = Path("fonts/MicrosoftYaHei.ttf")
-FEATURE_PATH = Path("test.fea")
-OUTPUT_PATH = Path("fonts/yahei-mod.ttf")
-
 
 def glyph_name(ch: str) -> str:
     code = ord(ch)
-    if 0x20 <= code <= 0x7E and ch.isalnum():
+    if ch.isascii() and (ch.isalpha() or ch.isdigit()):
         return ch
-    return f"uni{code:04X}"
+    if code <= 0xFFFF:
+        return f"uni{code:04X}"
+    return f"u{code:06X}"
 
 
 def build_feature(word_from: str, word_to: str) -> str:
     if len(word_from) != len(word_to):
         raise ValueError("The two words must have the same length.")
+    if not word_from:
+        raise ValueError("Words must not be empty.")
 
     lines: list[str] = [
         "languagesystem DFLT dflt;",
@@ -31,39 +33,41 @@ def build_feature(word_from: str, word_to: str) -> str:
     ]
 
     lookup_names: dict[tuple[str, str], str] = {}
-    lookup_order: list[tuple[str, str, str]] = []
+    lookup_defs: list[tuple[str, str, str]] = []
 
-    for src, dst in zip(word_from, word_to):
-        key = (glyph_name(src), glyph_name(dst))
+    for src_ch, dst_ch in zip(word_from, word_to):
+        src = glyph_name(src_ch)
+        dst = glyph_name(dst_ch)
+        key = (src, dst)
         if key not in lookup_names:
-            lookup_name = f"L_{len(lookup_names)}"
-            lookup_names[key] = lookup_name
-            lookup_order.append((lookup_name, key[0], key[1]))
+            name = f"L_{len(lookup_names)}"
+            lookup_names[key] = name
+            lookup_defs.append((name, src, dst))
 
-    for lookup_name, src, dst in lookup_order:
+    for name, src, dst in lookup_defs:
         lines.extend(
             [
-                f"lookup {lookup_name} {{",
+                f"lookup {name} {{",
                 f"    sub {src} by {dst};",
-                f"}} {lookup_name};",
+                f"}} {name};",
                 "",
             ]
         )
 
-    marked_from = " ".join(f"{glyph_name(ch)}'" for ch in word_from)
-    context_parts = [
-        f"{glyph_name(src)}' lookup {lookup_names[(glyph_name(src), glyph_name(dst))]}"
-        for src, dst in zip(word_from, word_to)
-    ]
+    marked_input = " ".join(f"{glyph_name(ch)}'" for ch in word_from)
+    contextual_rule = " ".join(
+        f"{glyph_name(src_ch)}' lookup {lookup_names[(glyph_name(src_ch), glyph_name(dst_ch))]}"
+        for src_ch, dst_ch in zip(word_from, word_to)
+    )
 
     lines.extend(
         [
             "feature calt {",
             "    lookup WORD_SUB {",
-            f"        ignore substitute @LETTER {marked_from};",
-            f"        ignore substitute {marked_from} @LETTER;",
+            f"        ignore substitute @LETTER {marked_input};",
+            f"        ignore substitute {marked_input} @LETTER;",
             "",
-            f"        sub {' '.join(context_parts)};",
+            f"        sub {contextual_rule};",
             "    } WORD_SUB;",
             "} calt;",
             "",
@@ -73,19 +77,42 @@ def build_feature(word_from: str, word_to: str) -> str:
     return "\n".join(lines)
 
 
-def main():
-    word_from = "banana"
-    word_to = "orange"
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("font", help="Input font path")
+    parser.add_argument("source", help="Source word, e.g. banana")
+    parser.add_argument("target", help="Target word, e.g. orange")
+    parser.add_argument(
+        "-o",
+        "--output",
+        help="Output font path; defaults to <input-stem>-mod<suffix>",
+    )
+    parser.add_argument(
+        "--print-feature",
+        action="store_true",
+        help="Print generated feature text",
+    )
+    args = parser.parse_args()
 
-    feature_text = build_feature(word_from, word_to)
-    FEATURE_PATH.write_text(feature_text, encoding="utf-8")
-    print(f"Generated {FEATURE_PATH}")
+    if len(args.source) != len(args.target):
+        raise SystemExit("source and target must have the same length")
 
-    font = TTFont(FONT_PATH)
-    addOpenTypeFeatures(font, str(FEATURE_PATH))
-    font.save(OUTPUT_PATH)
+    font_path = Path(args.font)
+    if args.output:
+        output_path = Path(args.output)
+    else:
+        output_path = font_path.with_name(f"{font_path.stem}-mod{font_path.suffix}")
 
-    print(f"Saved modified font to {OUTPUT_PATH}")
+    feature_text = build_feature(args.source, args.target)
+
+    if args.print_feature:
+        print(feature_text)
+
+    font = TTFont(font_path)
+    addOpenTypeFeatures(font, StringIO(feature_text))
+    font.save(output_path)
+
+    print(f"Saved modified font to {output_path}")
 
 
 if __name__ == "__main__":
