@@ -2,9 +2,13 @@
 
 ## Showcase
 
-1. Clone this repo
-2. Open `index.html` in your browser
-3. Type `Microsoft` and see `Microslop` below instead
+> [!NOTE]
+> Microsoft is a trademark of Microsoft Corporation. This is a joke font and is not affiliated with Microsoft in any way.
+
+1. Open [the website](https://word-morph.pro2684.workers.dev) in your browser
+2. Type `Microsoft` and see `Microslop` below instead
+
+You can grab and use the prebuilt font file [`Microslop.ttf`](./fonts/Microslop.ttf) without having to install anything.
 
 ## Usage
 
