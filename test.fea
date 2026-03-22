@@ -1,45 +1,40 @@
 languagesystem DFLT dflt;
 languagesystem latn dflt;
 
-@LETTER = [a b c d e f g h i j k l m n o p q r s t u v w x y z
-           A B C D E F G H I J K L M N O P Q R S T U V W X Y Z];
+@LETTER = [
+    A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+    a b c d e f g h i j k l m n o p q r s t u v w x y z
+];
 
-lookup B_TO_O {
+lookup L_0 {
     sub b by o;
-} B_TO_O;
+} L_0;
 
-lookup A1_TO_R {
+lookup L_1 {
     sub a by r;
-} A1_TO_R;
+} L_1;
 
-lookup N1_TO_A {
+lookup L_2 {
     sub n by a;
-} N1_TO_A;
+} L_2;
 
-lookup A2_TO_N {
+lookup L_3 {
     sub a by n;
-} A2_TO_N;
+} L_3;
 
-lookup N2_TO_G {
+lookup L_4 {
     sub n by g;
-} N2_TO_G;
+} L_4;
 
-lookup A3_TO_E {
+lookup L_5 {
     sub a by e;
-} A3_TO_E;
+} L_5;
 
 feature calt {
-    lookup BANANA_TO_ORANGE {
-        ignore substitute @LETTER
-            b' a' n' a' n' a';
-        ignore substitute
-            b' a' n' a' n' a' @LETTER;
+    lookup WORD_SUB {
+        ignore substitute @LETTER b' a' n' a' n' a';
+        ignore substitute b' a' n' a' n' a' @LETTER;
 
-        sub b' lookup B_TO_O
-            a' lookup A1_TO_R
-            n' lookup N1_TO_A
-            a' lookup A2_TO_N
-            n' lookup N2_TO_G
-            a' lookup A3_TO_E;
-    } BANANA_TO_ORANGE;
+        sub b' lookup L_0 a' lookup L_1 n' lookup L_2 a' lookup L_3 n' lookup L_4 a' lookup L_5;
+    } WORD_SUB;
 } calt;
