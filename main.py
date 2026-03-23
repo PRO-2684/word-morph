@@ -6,20 +6,17 @@ from fontTools.feaLib.builder import addOpenTypeFeatures
 from fontTools.ttLib import TTFont
 
 
-def glyph_name(ch: str) -> str:
-    code = ord(ch)
-    if ch.isascii() and (ch.isalpha() or ch.isdigit()):
-        return ch
-    if code <= 0xFFFF:
-        return f"uni{code:04X}"
-    return f"u{code:06X}"
-
-
-def build_feature(word_from: str, word_to: str) -> str:
+def build_feature(word_from: str, word_to: str, cmap: dict[int, str]) -> str:
     if len(word_from) != len(word_to):
         raise ValueError("The two words must have the same length.")
     if not word_from:
         raise ValueError("Words must not be empty.")
+
+    def glyph_name(ch: str) -> str:
+        code = ord(ch)
+        if code not in cmap:
+            raise ValueError(f"Character {ch} not found in font cmap")
+        return cmap[code]
 
     lines: list[str] = [
         "languagesystem DFLT dflt;",
@@ -108,14 +105,18 @@ def main() -> None:
     else:
         output_path = font_path.with_name(f"{font_path.stem}-mod{font_path.suffix}")
 
-    feature_text = build_feature(args.source, args.target)
+    font = TTFont(font_path)
+    print(f"Loaded font from {font_path}.")
+
+    cmap = font.getBestCmap()
+    if cmap is None:
+        raise RuntimeError("Font does not have a usable cmap table")
+    feature_text = build_feature(args.source, args.target, cmap)
     print("Generated OpenType feature text:")
     print(feature_text)
 
     if args.print_feature:
         print(feature_text)
-
-    font = TTFont(font_path)
     addOpenTypeFeatures(font, StringIO(feature_text))
     font.save(output_path)
 
