@@ -39,7 +39,7 @@ def build_feature(word_from: str, word_to: str) -> str:
         src = glyph_name(src_ch)
         dst = glyph_name(dst_ch)
         key = (src, dst)
-        if key not in lookup_names:
+        if dst != src and key not in lookup_names:
             name = f"L_{len(lookup_names)}"
             lookup_names[key] = name
             lookup_defs.append((name, src, dst))
@@ -55,10 +55,15 @@ def build_feature(word_from: str, word_to: str) -> str:
         )
 
     marked_input = " ".join(f"{glyph_name(ch)}'" for ch in word_from)
-    contextual_rule = " ".join(
-        f"{glyph_name(src_ch)}' lookup {lookup_names[(glyph_name(src_ch), glyph_name(dst_ch))]}"
-        for src_ch, dst_ch in zip(word_from, word_to)
-    )
+    contextual_rules = []
+    for src_ch, dst_ch in zip(word_from, word_to):
+        if dst_ch != src_ch:
+            src = glyph_name(src_ch)
+            lookup_name = lookup_names[(src, glyph_name(dst_ch))]
+            contextual_rules.append(f"{src}' lookup {lookup_name}")
+        else:
+            contextual_rules.append(f"{glyph_name(src_ch)}'")
+    contextual_rule = " ".join(contextual_rules)
 
     lines.extend(
         [
@@ -104,6 +109,8 @@ def main() -> None:
         output_path = font_path.with_name(f"{font_path.stem}-mod{font_path.suffix}")
 
     feature_text = build_feature(args.source, args.target)
+    print("Generated OpenType feature text:")
+    print(feature_text)
 
     if args.print_feature:
         print(feature_text)
